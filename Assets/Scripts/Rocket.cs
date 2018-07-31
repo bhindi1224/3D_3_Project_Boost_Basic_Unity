@@ -6,7 +6,7 @@ using TMPro;
 
 public class Rocket : MonoBehaviour {
 
-    [SerializeField] float rcsThrust = 100f;
+    [SerializeField] float rcsThrust = 200f;
     [SerializeField] float mainThrust = 20f;
     [SerializeField] TextMeshProUGUI collisionMessage;
     Rigidbody rigidBody;
@@ -38,25 +38,24 @@ public class Rocket : MonoBehaviour {
         }
         if (Input.GetKey(KeyCode.Space)) // can thrust while rotating
         {
-            rigidBody.AddRelativeForce(Vector3.back * mainThrust);
+            rigidBody.AddRelativeForce(Vector3.up * mainThrust);
         }
     }
     private void Rotate()
     {
         float rotationThisFrame = rcsThrust * Time.deltaTime;
         float rotationDirection = 0f;
-        rigidBody.freezeRotation = true; // take manual control of rotation
 
+            rigidBody.freezeRotation = true; // take manual control of rotation
         if (Input.GetKey(KeyCode.A))
         {
             rotationDirection++;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            rotationDirection--;
+            rotationDirection--;            
         }
-
-        transform.Rotate(Vector3.down * rotationDirection * rotationThisFrame);
+        transform.Rotate(Vector3.forward * rotationDirection * rotationThisFrame);
         rigidBody.freezeRotation = false; // resume physics (return control)
     }
     private void OnCollisionEnter(Collision collision)
