@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
+
+
 
 public class Rocket : MonoBehaviour {
 
@@ -66,7 +69,7 @@ public class Rocket : MonoBehaviour {
                 collisionMessage.text = collision.gameObject.tag.ToString();
                 break;
             case "Goal":
-                collisionMessage.text = collision.gameObject.tag.ToString();
+                SceneManager.LoadScene(1);
                 break;
             case "Friendly":
                 // do nothing
@@ -74,6 +77,7 @@ public class Rocket : MonoBehaviour {
                 break;
             case "Deadly":
                 collisionMessage.text = collision.gameObject.tag.ToString();
+                SceneManager.LoadScene(0);
                 break;
             case "Fuel":
                 collisionMessage.text = collision.gameObject.tag.ToString();
