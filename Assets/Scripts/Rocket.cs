@@ -12,6 +12,9 @@ public class Rocket : MonoBehaviour {
     [SerializeField] float rcsThrust = 200f;
     [SerializeField] float mainThrust = 20f;
     [SerializeField] TextMeshProUGUI collisionMessage;
+    [SerializeField] AudioClip mainEngine;
+    [SerializeField] AudioClip death;
+    [SerializeField] AudioClip goal;
     Rigidbody rigidBody;
     AudioSource audioSource;
 
@@ -23,7 +26,7 @@ public class Rocket : MonoBehaviour {
     {
         rigidBody = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
-	}
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -36,12 +39,11 @@ public class Rocket : MonoBehaviour {
     {
         if (state != State.Alive)
         {
-            audioSource.Stop();
             return;
         }
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            audioSource.Play();
+            audioSource.PlayOneShot(mainEngine);
         }
         if (Input.GetKeyUp(KeyCode.Space))
         {
@@ -83,21 +85,22 @@ public class Rocket : MonoBehaviour {
         {            
             case "Goal":
                 state = State.Transcending;
-                Invoke("LoadNextScene", 1f); // parameterise time
+                audioSource.Stop();
+                audioSource.PlayOneShot(goal);
+                Invoke("LoadNextScene", 2f); // parameterise time
                 break;
             case "Deadly":
+                audioSource.Stop();
+                audioSource.PlayOneShot(death);
+                collisionMessage.text = "should be playing death";
                 state = State.Dying;
-                collisionMessage.text = collision.gameObject.tag.ToString();
-                Invoke("LoadFirstScene", 1f);
-                break;
-            case "Fuel":
-                collisionMessage.text = collision.gameObject.tag.ToString();
+                Invoke("LoadFirstScene", 2f);
                 break;
         }
     }
 
     private void LoadNextScene()
-    {
+    {      
         SceneManager.LoadScene(1); // todo allow for more than 2 levels
     }
     private void LoadFirstScene()
