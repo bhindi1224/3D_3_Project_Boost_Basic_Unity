@@ -15,6 +15,9 @@ public class Rocket : MonoBehaviour {
     Rigidbody rigidBody;
     AudioSource audioSource;
 
+    enum State { Alive, Dying, Transcending}
+    State state = State.Alive;
+
 	// Use this for initialization
 	void Start ()
     {
@@ -31,6 +34,11 @@ public class Rocket : MonoBehaviour {
 
     private void Thrust()
     {
+        if (state != State.Alive)
+        {
+            audioSource.Stop();
+            return;
+        }
         if (Input.GetKeyDown(KeyCode.Space))
         {
             audioSource.Play();
@@ -46,6 +54,10 @@ public class Rocket : MonoBehaviour {
     }
     private void Rotate()
     {
+        if (state != State.Alive)
+        {
+            return;
+        }
         float rotationThisFrame = rcsThrust * Time.deltaTime;
         float rotationDirection = 0f;
 
@@ -63,27 +75,36 @@ public class Rocket : MonoBehaviour {
     }
     private void OnCollisionEnter(Collision collision)
     {
-        switch (collision.gameObject.tag)
+        if (state != State.Alive)
         {
-            case "Start":
-                collisionMessage.text = collision.gameObject.tag.ToString();
-                break;
+            return;
+        }
+        switch (collision.gameObject.tag)
+        {            
             case "Goal":
-                SceneManager.LoadScene(1);
-                break;
-            case "Friendly":
-                // do nothing
-                collisionMessage.text = collision.gameObject.tag.ToString();
+                state = State.Transcending;
+                Invoke("LoadNextScene", 1f); // parameterise time
                 break;
             case "Deadly":
+                state = State.Dying;
                 collisionMessage.text = collision.gameObject.tag.ToString();
-                SceneManager.LoadScene(0);
+                Invoke("LoadFirstScene", 1f);
                 break;
             case "Fuel":
                 collisionMessage.text = collision.gameObject.tag.ToString();
                 break;
         }
     }
+
+    private void LoadNextScene()
+    {
+        SceneManager.LoadScene(1); // todo allow for more than 2 levels
+    }
+    private void LoadFirstScene()
+    {
+        SceneManager.LoadScene(0);
+    }
+
     private void OnCollisionExit(Collision collision)
     {
         collisionMessage.text = "";
