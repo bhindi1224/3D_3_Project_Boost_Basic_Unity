@@ -11,12 +11,16 @@ public class Rocket : MonoBehaviour {
     [SerializeField] float rcsThrust = 200f;
     [SerializeField] float mainThrust = 20f;
     [SerializeField] TextMeshProUGUI collisionMessage;
+    [SerializeField] float levelLoadDelay = 2f;
+
     [SerializeField] AudioClip mainEngine;
     [SerializeField] AudioClip death;
     [SerializeField] AudioClip goal;
+
     [SerializeField] ParticleSystem mainEngineParticles;
     [SerializeField] ParticleSystem successParticles;
     [SerializeField] ParticleSystem deathParticles;
+
     Rigidbody rigidBody;
     AudioSource audioSource;
 
@@ -92,7 +96,7 @@ public class Rocket : MonoBehaviour {
                 audioSource.Stop();
                 audioSource.PlayOneShot(goal);
                 successParticles.Play();
-                Invoke("LoadNextScene", 2f); // parameterise time
+                Invoke("LoadNextScene", levelLoadDelay);
                 break;
             case "Deadly":
                 audioSource.Stop();
@@ -100,7 +104,7 @@ public class Rocket : MonoBehaviour {
                 deathParticles.Play();
                 collisionMessage.text = "should be playing death";
                 state = State.Dying;
-                Invoke("LoadFirstScene", 2f);
+                Invoke("LoadFirstScene", levelLoadDelay);
                 break;
         }
     }
