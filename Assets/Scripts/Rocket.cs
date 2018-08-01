@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 public class Rocket : MonoBehaviour {
     [SerializeField] float rcsThrust = 200f;
     [SerializeField] float mainThrust = 20f;
-    [SerializeField] TextMeshProUGUI collisionMessage;
+    [SerializeField] TextMeshProUGUI statusTextField;
     [SerializeField] float levelLoadDelay = 2f;
 
     [SerializeField] AudioClip mainEngine;
@@ -27,11 +27,15 @@ public class Rocket : MonoBehaviour {
     enum State { Alive, Dying, Transcending}
     State state = State.Alive;
 
+
 	// Use this for initialization
 	void Start ()
     {
         rigidBody = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
+        Scene currentScene = SceneManager.GetActiveScene();
+        statusTextField.text = currentScene.name.ToString();
+        print(statusTextField.text);
     }
 	
 	// Update is called once per frame
@@ -59,7 +63,7 @@ public class Rocket : MonoBehaviour {
         }
         if (Input.GetKey(KeyCode.Space)) // can thrust while rotating
         {
-            rigidBody.AddRelativeForce(Vector3.up * mainThrust);
+            rigidBody.AddRelativeForce(Vector3.up * mainThrust * Time.deltaTime);
         }
     }
     private void Rotate()
@@ -93,16 +97,17 @@ public class Rocket : MonoBehaviour {
         {            
             case "Goal":
                 state = State.Transcending;
+                statusTextField.text = "Congratulations!!";
                 audioSource.Stop();
                 audioSource.PlayOneShot(goal);
                 successParticles.Play();
                 Invoke("LoadNextScene", levelLoadDelay);
                 break;
             case "Deadly":
+                statusTextField.text = "You Crashed!";
                 audioSource.Stop();
                 audioSource.PlayOneShot(death);
                 deathParticles.Play();
-                collisionMessage.text = "should be playing death";
                 state = State.Dying;
                 Invoke("LoadFirstScene", levelLoadDelay);
                 break;
@@ -116,10 +121,5 @@ public class Rocket : MonoBehaviour {
     private void LoadFirstScene()
     {
         SceneManager.LoadScene(0);
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        collisionMessage.text = "";
     }
 }
