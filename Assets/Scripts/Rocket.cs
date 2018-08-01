@@ -8,13 +8,15 @@ using UnityEngine.SceneManagement;
 
 
 public class Rocket : MonoBehaviour {
-
     [SerializeField] float rcsThrust = 200f;
     [SerializeField] float mainThrust = 20f;
     [SerializeField] TextMeshProUGUI collisionMessage;
     [SerializeField] AudioClip mainEngine;
     [SerializeField] AudioClip death;
     [SerializeField] AudioClip goal;
+    [SerializeField] ParticleSystem mainEngineParticles;
+    [SerializeField] ParticleSystem successParticles;
+    [SerializeField] ParticleSystem deathParticles;
     Rigidbody rigidBody;
     AudioSource audioSource;
 
@@ -44,10 +46,12 @@ public class Rocket : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Space))
         {
             audioSource.PlayOneShot(mainEngine);
+            mainEngineParticles.Play();
         }
         if (Input.GetKeyUp(KeyCode.Space))
         {
             audioSource.Stop();
+            mainEngineParticles.Stop();
         }
         if (Input.GetKey(KeyCode.Space)) // can thrust while rotating
         {
@@ -87,11 +91,13 @@ public class Rocket : MonoBehaviour {
                 state = State.Transcending;
                 audioSource.Stop();
                 audioSource.PlayOneShot(goal);
+                successParticles.Play();
                 Invoke("LoadNextScene", 2f); // parameterise time
                 break;
             case "Deadly":
                 audioSource.Stop();
                 audioSource.PlayOneShot(death);
+                deathParticles.Play();
                 collisionMessage.text = "should be playing death";
                 state = State.Dying;
                 Invoke("LoadFirstScene", 2f);
