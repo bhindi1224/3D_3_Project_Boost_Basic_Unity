@@ -27,9 +27,6 @@ public class Rocket : MonoBehaviour {
     enum State { Alive, Dying, Transcending}
     State state = State.Alive;
 
-    bool collisionsEnabled = true;
-
-
 	// Use this for initialization
 	void Start ()
     {
@@ -76,7 +73,7 @@ public class Rocket : MonoBehaviour {
         float rotationThisFrame = rcsThrust * Time.deltaTime;
         float rotationDirection = 0f;
 
-            rigidBody.freezeRotation = true; // take manual control of rotation
+        rigidBody.angularVelocity = Vector3.zero;  // remove rotation due to physics
         if (Input.GetKey(KeyCode.A))
         {
             rotationDirection++;
@@ -86,11 +83,10 @@ public class Rocket : MonoBehaviour {
             rotationDirection--;            
         }
         transform.Rotate(Vector3.forward * rotationDirection * rotationThisFrame);
-        rigidBody.freezeRotation = false; // resume physics (return control)
     }
     private void OnCollisionEnter(Collision collision)
     {
-        if (state != State.Alive || !collisionsEnabled)
+        if (state != State.Alive)
         {
             return;
         }
