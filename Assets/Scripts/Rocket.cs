@@ -37,7 +37,6 @@ public class Rocket : MonoBehaviour {
         audioSource = GetComponent<AudioSource>();
         Scene currentScene = SceneManager.GetActiveScene();
         statusTextField.text = currentScene.name.ToString();
-        print(statusTextField.text);
     }
 	
 	// Update is called once per frame
@@ -45,22 +44,6 @@ public class Rocket : MonoBehaviour {
     {
         Thrust();
         Rotate();
-        if (Debug.isDebugBuild)
-        {
-            CheckDebugKeys();
-        }
-    }
-
-    private void CheckDebugKeys()
-    {
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            LoadNextScene();
-        }
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            collisionsEnabled = !collisionsEnabled;
-        }
     }
 
     private void Thrust()
@@ -119,7 +102,7 @@ public class Rocket : MonoBehaviour {
                 audioSource.Stop();
                 audioSource.PlayOneShot(goal);
                 successParticles.Play();
-                Invoke("LoadNextScene", levelLoadDelay);
+                Invoke("LoadNextLevel", levelLoadDelay);
                 break;
             case "Deadly":
                 statusTextField.text = "You Crashed!";
@@ -132,9 +115,20 @@ public class Rocket : MonoBehaviour {
         }
     }
 
-    private void LoadNextScene()
-    {      
-        SceneManager.LoadScene(1); // todo allow for more than 2 levels
+    private void LoadNextLevel()
+    {
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int totalSceneCount = SceneManager.sceneCountInBuildSettings;
+        int nextSceneIndex;
+        if (currentSceneIndex < totalSceneCount - 1 )
+        {
+            nextSceneIndex = currentSceneIndex + 1;
+        }
+        else
+        {
+            nextSceneIndex = 0;
+        }
+        SceneManager.LoadScene(nextSceneIndex);
     }
     private void LoadFirstScene()
     {
